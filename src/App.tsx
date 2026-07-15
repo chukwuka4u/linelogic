@@ -289,7 +289,7 @@ export default function App() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-1.5">
             <span className="font-['Space_Grotesk'] text-xl font-bold tracking-tight">
-              Lyne
+              LineLogic
             </span>
             <span className="mb-3 h-1.5 w-1.5 rounded-full bg-[#C6FE1E]" />
           </div>
@@ -329,7 +329,7 @@ export default function App() {
                 <div className="flex h-full flex-col">
                   <div className="flex items-center gap-1.5 px-6 py-5">
                     <span className="font-['Space_Grotesk'] text-lg font-bold tracking-tight text-[#1A1025]">
-                      Lyne
+                      LineLogic
                     </span>
                     <span className="mb-2.5 h-1.5 w-1.5 rounded-full bg-[#C6FE1E]" />
                   </div>
