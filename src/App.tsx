@@ -10,6 +10,12 @@ import {
   AvatarFallback,
 } from "@/components/ui/avatar";
 import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
+import {
   Clock,
   QrCode,
   Bell,
@@ -19,6 +25,7 @@ import {
   LogOut,
   Sparkles,
   ChevronRight,
+  Menu,
   type LucideIcon,
 } from "lucide-react";
 
@@ -279,10 +286,10 @@ export default function App() {
 
       {/* Nav */}
       <header className="sticky top-0 z-20 border-b border-[#EBE6F2] bg-[#FAF8FC]/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-1.5">
             <span className="font-['Space_Grotesk'] text-xl font-bold tracking-tight">
-              LineLogic
+              Lyne
             </span>
             <span className="mb-3 h-1.5 w-1.5 rounded-full bg-[#C6FE1E]" />
           </div>
@@ -292,13 +299,81 @@ export default function App() {
             <a href="#features" className="hover:text-[#1A1025]">Features</a>
             <a href="#" className="hover:text-[#1A1025]">Pricing</a>
           </nav>
-          <div className="flex items-center gap-3">
-            <a href="#" className="hidden font-['Inter'] text-sm font-semibold text-[#40196D] sm:block">
+
+          <div className="hidden items-center gap-3 md:flex">
+            <a href="#" className="font-['Inter'] text-sm font-semibold text-[#40196D]">
               Log in
             </a>
             <Button className="rounded-full bg-[#40196D] px-5 font-['Inter'] text-sm font-semibold text-white hover:bg-[#2B0F4D]">
               Join free
             </Button>
+          </div>
+
+          {/* Mobile: hamburger opens a side drawer */}
+          <div className="md:hidden">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Open menu"
+                  className="rounded-full text-[#1A1025] hover:bg-[#F2ECFB]"
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent
+                side="right"
+                className="w-[280px] border-l border-[#EBE6F2] bg-[#FAF8FC] p-0 sm:w-[320px]"
+              >
+                <div className="flex h-full flex-col">
+                  <div className="flex items-center gap-1.5 px-6 py-5">
+                    <span className="font-['Space_Grotesk'] text-lg font-bold tracking-tight text-[#1A1025]">
+                      Lyne
+                    </span>
+                    <span className="mb-2.5 h-1.5 w-1.5 rounded-full bg-[#C6FE1E]" />
+                  </div>
+                  <Separator className="bg-[#EBE6F2]" />
+
+                  <nav className="flex flex-1 flex-col gap-1 px-3 py-5 font-['Inter'] text-base font-medium text-[#1A1025]">
+                    <SheetClose asChild>
+                      <a href="#how" className="rounded-xl px-3 py-3 hover:bg-[#F2ECFB]">
+                        How it works
+                      </a>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <a href="#demo" className="rounded-xl px-3 py-3 hover:bg-[#F2ECFB]">
+                        Live demo
+                      </a>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <a href="#features" className="rounded-xl px-3 py-3 hover:bg-[#F2ECFB]">
+                        Features
+                      </a>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <a href="#" className="rounded-xl px-3 py-3 hover:bg-[#F2ECFB]">
+                        Pricing
+                      </a>
+                    </SheetClose>
+                  </nav>
+
+                  <div className="mt-auto flex flex-col gap-3 border-t border-[#EBE6F2] px-6 py-6">
+                    <a
+                      href="#"
+                      className="text-center font-['Inter'] text-sm font-semibold text-[#40196D]"
+                    >
+                      Log in
+                    </a>
+                    <SheetClose asChild>
+                      <Button className="w-full rounded-full bg-[#40196D] py-5 font-['Inter'] text-sm font-semibold text-white hover:bg-[#2B0F4D]">
+                        Join free
+                      </Button>
+                    </SheetClose>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>
