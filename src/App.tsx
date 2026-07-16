@@ -255,7 +255,7 @@ function FeatureCard({ icon: Icon, title, body }: FeatureCardProps): React.JSX.E
   );
 }
 
-export default function LyneLanding(): React.JSX.Element {
+export default function App(): React.JSX.Element {
   const [email, setEmail] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
 
@@ -370,7 +370,9 @@ export default function LyneLanding(): React.JSX.Element {
               track their spot, and get called — all in real time.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button className="rounded-full bg-lyne-purple-700 px-6 py-6 font-body text-sm font-semibold text-white hover:bg-lyne-purple-900">
+              <Button 
+                onClick={() => window.location.href = '/home'}
+              className="rounded-full bg-lyne-purple-700 px-6 py-6 font-body text-sm font-semibold text-white hover:bg-lyne-purple-900">
                 Create your first queue
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
