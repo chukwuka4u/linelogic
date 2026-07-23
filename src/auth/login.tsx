@@ -12,6 +12,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Link } from "react-router";
+import { useSignIn } from "@clerk/react"
 
 
 // Design tokens: see tailwind.config.ts (lyne.*) and lyne-tokens.ts
@@ -111,15 +112,33 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>): React.JSX.Element {
   );
 }
 
+
 export default function Login(): React.JSX.Element {
+  const {fetchStatus, signIn, errors} = useSignIn(); // TODO: implement Clerk sign-in
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [remember, setRemember] = useState<boolean>(true);
   const [status, setStatus] = useState<AuthStatus>("idle");
   const [errorMsg, setErrorMsg] = useState<string>("");
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  
+  async function signInWithGoogle(): Promise<void> {
+    try {
+    // Trigger the OAuth redirect flow natively with Core 3
+    const { error } = await signIn.sso({
+      strategy: "oauth_google",
+      redirectCallbackUrl: "/sso-callback",       // Route handling the callback context
+      redirectUrl: "/home", // Where to send users after successful login
+    });
+    if (error) {
+      setErrorMsg(error.message)
+      console.error("Google sign-in initiation failed:", error.message);
+    }
+    } catch (err: unknown) {
+      console.error("Google sign in initialization failed:", err);
+    }
+  }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setErrorMsg("");
 
@@ -129,11 +148,28 @@ export default function Login(): React.JSX.Element {
       return;
     }
 
-    setStatus("loading");
-    setTimeout(() => {
+    if (fetchStatus === "fetching")
+      setStatus("loading");
+    if (errors)
+      setStatus("error");
+
       // Demo only — replace with real auth call.
+      const { error } = await signIn.create({
+        identifier: email,
+        password: password,
+      });
+      if (error) {
+        setStatus("error");
+        return;
+      }
       setStatus("success");
-    }, 1100);
+      if (signIn.status === "complete") {
+        // 3. Set the active session and redirect the user
+        await signIn.finalize()
+        window.location.href = "/home";
+      } else {
+        console.log("Additional steps required:", signIn.status);
+      }
   };
 
   return (
@@ -293,6 +329,7 @@ export default function Login(): React.JSX.Element {
               variant="outline"
               type="button"
               className="w-full rounded-full border-lyne-border bg-transparent py-6 font-body text-sm font-semibold text-lyne-ink hover:bg-lyne-surface-muted"
+              onClick={signInWithGoogle}
             >
               <GoogleIcon className="mr-2" />
               Continue with Google

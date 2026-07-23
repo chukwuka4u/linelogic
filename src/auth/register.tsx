@@ -16,6 +16,8 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { Link } from "react-router";
+import { useSignUp } from "@clerk/react";
+import OtpModal from "@/pages/OTPModal";
 
 
 // Design tokens: see tailwind.config.ts (lyne.*) and lyne-tokens.ts
@@ -238,18 +240,40 @@ const STRENGTH_META: Record<
 };
 
 export default function Register(): React.JSX.Element {
+  const { signUp, fetchStatus } = useSignUp();
   const [name, setName] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [agreed, setAgreed] = useState<boolean>(false);
   const [status, setStatus] = useState<AuthStatus>("idle");
   const [errorMsg, setErrorMsg] = useState<string>("");
+  const [otpOpen, setOtpOpen] = useState<boolean>(false);
+  const [verified, setVerified] = useState<boolean>(false);
 
   const strength = getPasswordStrength(password);
   const strengthMeta = STRENGTH_META[strength];
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  async function signUpWithGoogle(): Promise<void> {
+    console.log("sign up with google")
+    try {
+    // Trigger the OAuth redirect flow natively with Core 3
+    const { error } = await signUp.sso({
+      strategy: "oauth_google",
+      redirectCallbackUrl: "/sso-callback", // Route handling the callback context
+      redirectUrl: "/home", // Where to send users after successful login
+    });
+    if (error) {
+      setErrorMsg(error.message)
+      console.error("Google sign-up initiation failed:", error.message);
+    }
+    } catch (err: unknown) {
+      console.error("Google sign up initialization failed:", err);
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setErrorMsg("");
 
@@ -263,12 +287,36 @@ export default function Register(): React.JSX.Element {
       setErrorMsg("Please accept the Terms and Privacy Policy first.");
       return;
     }
+    if (fetchStatus === "fetching") {
+      setStatus("loading");
+      return;
+    }
 
-    setStatus("loading");
-    setTimeout(() => {
+
       // Demo only — replace with real signup call.
-      setStatus("success");
-    }, 1100);
+      const { error } = await signUp.password({
+        emailAddress: email,
+        password: password,
+        username: name,
+      });
+      if (error) {
+        setErrorMsg(error.message);
+        console.log(error.code)
+        setStatus("error");
+        return;
+      }
+      // Modern status handling
+      if (signUp.status === "missing_requirements") {
+        // Clerk automatically sends the email OTP code upon requirement detection
+        const { error } = await signUp.verifications.sendEmailCode();
+        if (error) {
+          setErrorMsg(error.message);
+          console.log(error.code)
+          setStatus("error");
+          return;
+        }
+        setOtpOpen(true);
+      }
   };
 
   return (
@@ -341,6 +389,26 @@ export default function Register(): React.JSX.Element {
                   className="rounded-xl border-lyne-border py-5 font-body focus-visible:ring-lyne-purple-700"
                 />
               </div>
+              <div className="space-y-2">
+                <Label
+                  htmlFor="phoneNumber"
+                  className="font-body text-sm font-medium text-lyne-ink"
+                >
+                  Phone number
+                </Label>
+                <Input
+                  id="phoneNumber"
+                  type="tel"
+                  autoComplete="tel"
+                  placeholder="+1 (555) 123-4567"
+                  value={phoneNumber}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setPhoneNumber(e.target.value)
+                  }
+                  className="rounded-xl border-lyne-border py-5 font-body focus-visible:ring-lyne-purple-700"
+                />
+              </div>
+
 
               <div className="space-y-2">
                 <Label
@@ -405,7 +473,7 @@ export default function Register(): React.JSX.Element {
                 </p>
               )}
 
-              {status === "success" && (
+              {status === "success" && verified && (
                 <p className="flex items-center gap-2 rounded-xl bg-lyne-surface-muted px-3.5 py-2.5 font-body text-sm font-medium text-lyne-purple-700">
                   <Check className="h-4 w-4" />
                   Account created — let's set up your first queue.
@@ -468,6 +536,7 @@ export default function Register(): React.JSX.Element {
               variant="outline"
               type="button"
               className="w-full rounded-full border-lyne-border bg-transparent py-6 font-body text-sm font-semibold text-lyne-ink hover:bg-lyne-surface-muted"
+              onClick={signUpWithGoogle}
             >
               <GoogleIcon className="mr-2" />
               Continue with Google
@@ -475,6 +544,13 @@ export default function Register(): React.JSX.Element {
           </div>
         </div>
       </div>
+
+      <OtpModal
+        open={otpOpen}
+        onOpenChange={setOtpOpen}
+        email={email}
+        onVerified={() => setVerified(true)}
+      />
     </div>
   );
 }

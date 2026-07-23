@@ -6,16 +6,22 @@ import Login from './auth/login.tsx'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import Register from './auth/register.tsx'
 import AppRouter from './pages/AppRouter.tsx'
+import { AuthenticateWithRedirectCallback, ClerkProvider } from '@clerk/react'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
+    <ClerkProvider 
+      publishableKey={import.meta.env.VITE_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    >
+      <BrowserRouter>
+        <Routes>
         <Route index element={<App />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-      </Routes>
-      <AppRouter/>
-    </BrowserRouter>
+        <Route path="/sso-callback" element={<AuthenticateWithRedirectCallback />} />
+        </Routes>
+        <AppRouter/>
+      </BrowserRouter>
+    </ClerkProvider>
   </StrictMode>,
 )
