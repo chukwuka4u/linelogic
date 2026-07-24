@@ -374,19 +374,19 @@ export default function App(): React.JSX.Element {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button 
-                onClick={() => window.location.href = '/home'}
+                onClick={() => window.location.href = '/register'}
               className="rounded-full bg-lyne-purple-700 px-6 py-6 font-body text-sm font-semibold text-white hover:bg-lyne-purple-900">
                 Create your first queue
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <a href="#demo">
+              <Link to="/login">
                 <Button
                   variant="outline"
                   className="rounded-full border-lyne-border bg-transparent px-6 py-6 font-body text-sm font-semibold text-lyne-purple-700 hover:bg-lyne-surface-muted"
                 >
                   See a live queue
                 </Button>
-              </a>
+              </Link>
             </div>
             <div className="mt-12 flex flex-wrap gap-x-8 gap-y-6">
               {[
