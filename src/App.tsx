@@ -333,14 +333,17 @@ export default function App(): React.JSX.Element {
                   </nav>
 
                   <div className="mt-auto flex flex-col gap-3 border-t border-lyne-divider px-6 py-6">
-                    <a
-                      href="#"
+                    <Link
+                      to="/login"
                       className="text-center font-body text-sm font-semibold text-lyne-purple-700"
                     >
                       Log in
-                    </a>
+                    </Link>
                     <SheetClose>
-                      <Button className="w-full rounded-full bg-lyne-purple-700 py-5 font-body text-sm font-semibold text-white hover:bg-lyne-purple-900">
+                      <Button 
+                      
+                      onClick={() => window.location.href = "/register"}
+                      className="w-full rounded-full bg-lyne-purple-700 py-5 font-body text-sm font-semibold text-white hover:bg-lyne-purple-900">
                         Join free
                       </Button>
                     </SheetClose>
